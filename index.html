@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARA KAY CHYNNA</title>
+    <link rel="stylesheet" href="calc.css">
+</head>
+<body>
+    <div id="calc_box">
+        <input type="text" id="display_screen" readonly>
+
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="operator">AC</button>
+            <button onclick="deleteLast()" class="operator">DEL</button>
+            <button onclick="appendGiven('%')" class="operator">%</button>
+            <button onclick="appendGiven('/')" class="operator">/</button>
+
+            <button onclick="appendGiven(7)">7</button>
+            <button onclick="appendGiven(8)">8</button>
+            <button onclick="appendGiven(9)">9</button>
+            <button onclick="appendGiven('*')" class="operator">*</button>
+
+            <button onclick="appendGiven(4)">4</button>
+            <button onclick="appendGiven(5)">5</button>
+            <button onclick="appendGiven(6)">6</button>
+            <button onclick="appendGiven('-')" class="operator">-</button>
+
+            <button onclick="appendGiven(1)">1</button>
+            <button onclick="appendGiven(2)">2</button>
+            <button onclick="appendGiven(3)">3</button>
+            <button onclick="appendGiven('+')" class="operator">+</button>
+
+            <button onclick="appendGiven(0)">0</button>
+            <button onclick="appendGiven('.')">.</button>
+            <button onclick="calculate()" id="equals" class="operator">=</button>
+        </div>
+    </div>
+
+    <audio src="sayo.mp3" type="audio/mp3" id="sayo"></audio>
+</body>
+
+    <script>
+        function appendGiven(Given) {
+            document.getElementById("display_screen").value += Given;
+        }
+
+        function clearDisplay() {
+            document.getElementById("display_screen").value = "";
+        }
+
+        function deleteLast(){
+            let current_display = document.getElementById("display_screen");
+            current_display.value = current_display.value.slice(0, -1);
+        }
+
+        function calculate() {
+            try {
+                let math_problem = document.getElementById("display_screen").value;
+                    clearDisplay();
+                    playSongWithLyrics();
+               
+
+            } 
+            catch (error) {
+                document.getElementById("display_screen").value = "Error";
+            }
+        }
+
+        function playSongWithLyrics() {
+    const song = document.getElementById("sayo");
+    const display = document.getElementById("display_screen");
+
+    display.style.textAlign = "center";
+    display.style.fontStyle = "italic";
+    display.style.fontWeight = "bolder";
+    display.classList.add("change_bg");
+
+    const lyrics = [
+        // Intro
+        { text: "Ooh, ako pa ba, oh", time: 0 },
+
+        // Pre-Chorus
+        { text: "Ikaw at ako", time: 5000 },
+        { text: "Ang magkasama", time: 7500 },
+        { text: "Sa mga alaala", time: 10000 },
+
+        // Chorus
+        { text: "Pwede bang?", time: 14000 },
+        { text: "Kalimutan muna natin ang mundo", time: 16500 },
+        { text: "At hawakan mo ang kamay ko", time: 21000 },
+        { text: "Magmahalan", time: 25000 },
+        { text: "Na walang iniisip na kung ano", time: 28000 },
+        { text: "Ipakita lang ang totoong tayo", time: 33000 }
+    ];
+
+
+            song.play();
+
+            lyrics.forEach(line => {
+                display.classList.add("fadeInOut");
+                setTimeout(() => {
+                    display.value = line.text;
+                }, line.time);
+            });
+
+             song.onended = () => {
+            display.value = "";
+            display.style.textAlign = "left";
+            display.style.fontStyle = "normal";
+            display.style.fontWeight = "normal";
+                    display.classList.remove("change_bg");
+                };
+        }
+    </script>
+</html>
