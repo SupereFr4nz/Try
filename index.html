@@ -40,77 +40,100 @@
     <audio src="sayo.mp3" type="audio/mp3" id="sayo"></audio>
 </body>
 
-    <script>
-        function appendGiven(Given) {
-            document.getElementById("display_screen").value += Given;
-        }
 
-        function clearDisplay() {
-            document.getElementById("display_screen").value = "";
-        }
+<script>
+    function appendGiven(Given) {
+        document.getElementById("display_screen").value += Given;
+    }
 
-        function deleteLast(){
-            let current_display = document.getElementById("display_screen");
-            current_display.value = current_display.value.slice(0, -1);
-        }
+    function clearDisplay() {
+        document.getElementById("display_screen").value = "";
+    }
 
-        function calculate() {
-            try {
-                let math_problem = document.getElementById("display_screen").value;
-                    clearDisplay();
-                    playSongWithLyrics();
-               
+    function deleteLast() {
+        let display = document.getElementById("display_screen");
+        display.value = display.value.slice(0, -1);
+    }
 
-            } 
-            catch (error) {
-                document.getElementById("display_screen").value = "Error";
+    function calculate() {
+        try {
+            let math_problem =
+                document.getElementById("display_screen").value;
+
+            if (math_problem.trim() === "") {
+                return;
             }
+
+            // Clear the calculator and play the song
+            clearDisplay();
+            playSongWithLyrics();
+
+        } catch (error) {
+            document.getElementById("display_screen").value = "Error";
         }
+    }
 
-        function playSongWithLyrics() {
-    const song = document.getElementById("sayo");
-    const display = document.getElementById("display_screen");
+    function playSongWithLyrics() {
+        const song = document.getElementById("sayo");
+        const display = document.getElementById("display_screen");
 
-    display.style.textAlign = "center";
-    display.style.fontStyle = "italic";
-    display.style.fontWeight = "bolder";
-    display.classList.add("change_bg");
+        const lyrics = [
+            // Intro
+            { text: "Ooh, ako pa ba, oh", time: 0 },
 
-const lyrics = [
-    // Intro
-    { text: "Ooh, ako pa ba, oh", time: 0 },
+            // Pre-Chorus
+            { text: "Ikaw at ako", time: 10000 },
+            { text: "Ang magkasama", time: 13000 },
+            { text: "Sa mga alaala", time: 16000 },
 
-    // Pre-Chorus
-    { text: "Ikaw at ako", time: 10000 },
-    { text: "Ang magkasama", time: 13000 },
-    { text: "Sa mga alaala", time: 16000 },
+            // Chorus
+            { text: "Pwede bang?", time: 21000 },
+            { text: "Kalimutan muna natin ang mundo", time: 24000 },
+            { text: "At hawakan mo ang kamay ko", time: 29000 },
+            { text: "Magmahalan", time: 34000 },
+            { text: "Na walang iniisip na kung ano", time: 37000 },
+            { text: "Ipakita lang ang totoong tayo", time: 42000 }
+        ];
 
-    // Chorus
-    { text: "Pwede bang?", time: 21000 },
-    { text: "Kalimutan muna natin ang mundo", time: 24000 },
-    { text: "At hawakan mo ang kamay ko", time: 29000 },
-    { text: "Magmahalan", time: 34000 },
-    { text: "Na walang iniisip na kung ano", time: 37000 },
-    { text: "Ipakita lang ang totoong tayo", time: 42000 }
-];
+        // Reset audio and previous lyric state
+        song.pause();
+        song.currentTime = 0;
 
+        display.style.textAlign = "center";
+        display.style.fontStyle = "italic";
+        display.style.fontWeight = "bolder";
+        display.classList.add("change_bg", "fadeInOut");
 
-            song.play();
+        let currentLine = -1;
 
-            lyrics.forEach(line => {
-                display.classList.add("fadeInOut");
-                setTimeout(() => {
-                    display.value = line.text;
-                }, line.time);
-            });
+        // Sync lyrics to the actual music playback
+        song.ontimeupdate = function () {
+            const currentTime = song.currentTime * 1000;
 
-             song.onended = () => {
+            for (let i = lyrics.length - 1; i >= 0; i--) {
+                if (currentTime >= lyrics[i].time) {
+                    if (currentLine !== i) {
+                        currentLine = i;
+                        display.value = lyrics[i].text;
+                    }
+                    break;
+                }
+            }
+        };
+
+        song.onended = function () {
             display.value = "";
             display.style.textAlign = "left";
             display.style.fontStyle = "normal";
             display.style.fontWeight = "normal";
-                    display.classList.remove("change_bg");
-                };
-        }
-    </script>
+            display.classList.remove("change_bg", "fadeInOut");
+            currentLine = -1;
+        };
+
+        song.play().catch(function (error) {
+            console.error("Unable to play music:", error);
+            display.value = "Unable to play music.";
+        });
+    }
+</script>
 </html>
